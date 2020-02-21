@@ -3,20 +3,28 @@ package ro.pub.cs.systems.eim.lab01.myfirstandroidapplication;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     final private static long TRANSPARENCY_EFFECT_DURATION = 5000;
 
     private ButtonClickListener buttonClickListener = new ButtonClickListener();
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
+    private static final String TAG = "MainActivity";
 
     private class ButtonClickListener implements Button.OnClickListener {
 
@@ -33,12 +41,6 @@ public class MainActivity extends AppCompatActivity {
             fadeEffect.setDuration(TRANSPARENCY_EFFECT_DURATION);
             fadeEffect.setFillAfter(true);
             greetingTextView.setAnimation(fadeEffect);
-            // TODO: bonus fake
-//            SensorManager sensorManager;
-//            Sensor sensor;
-//
-//            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
 
     }
@@ -48,10 +50,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button submitButton = (Button)findViewById(R.id.submit_button);
+        Button submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(buttonClickListener);
 
+        // TODO: bonus fake
+//        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // TODO: bonus
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        sensorManager.registerListener(MainActivity.this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Log.d(TAG, "onSensorChanged: X: " + sensorEvent.values[0] + " Y: " +
+                sensorEvent.values[1] + " Z: " + sensorEvent.values[2]);
     }
 }
